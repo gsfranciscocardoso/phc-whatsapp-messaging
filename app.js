@@ -25,10 +25,23 @@ app.get('/', (req, res) => {
 
 // Route for POST requests
 app.post('/', (req, res) => {
-  const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
-  console.log(`\n\nWebhook received ${timestamp}\n`);
-  console.log(JSON.stringify(req.body, null, 2));
-  res.status(200).end();
+  const body = req.body;
+
+  if (body.entry?.[0]?.changes?.[0]?.value?.statuses) {
+    const status = body.entry[0].changes[0].value.statuses[0];
+
+    console.log("MESSAGE STATUS UPDATE:");
+    console.log("ID:", status.id);
+    console.log("STATUS:", status.status);
+    console.log("TIME:", status.timestamp);
+  }
+
+  if (body.entry?.[0]?.changes?.[0]?.value?.messages) {
+    console.log("INCOMING MESSAGE:");
+    console.log(JSON.stringify(body, null, 2));
+  }
+
+  res.sendStatus(200);
 });
 
 // Start the server
